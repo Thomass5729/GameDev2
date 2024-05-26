@@ -1,0 +1,44 @@
+import pgzrun
+import random
+
+TITLE = "Flappy Ball"
+WIDTH = 600
+HEIGHT = 600
+GRAVITY = 2000
+
+class Ball:
+    def __init__(self):
+        self.initx = 300
+        self.inity = 300
+        self.radius = 15
+        self.velx = 200
+        self.vely = 0
+        self.COR = 0.6
+    
+    def draw(self):
+        screen.draw.filled_circle((self.initx,self.inity),self.radius,color="blue")
+
+
+ball = Ball()
+
+def draw():
+    screen.clear
+    screen.fill("black")
+    ball.draw()
+
+def update(time):
+    u_y = ball.vely
+    ball.vely += GRAVITY*time
+    ball.inity += (u_y + ball.vely)/2 * time
+    ball.initx += ball.velx*time
+    if ball.initx < 0 or ball.initx > 600:
+        ball.velx *= -1
+    if ball.inity > HEIGHT:
+        ball.inity = HEIGHT
+        ball.vely = ball.vely * -1 * ball.COR
+
+def on_key_down(key):
+    if key==keys.SPACE:
+        ball.vely -= 1000
+
+pgzrun.go()
