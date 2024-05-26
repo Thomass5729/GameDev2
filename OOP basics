@@ -1,0 +1,65 @@
+class Student:
+    def __init__(self,studentID,name,age,house):
+        self.studentID = studentID
+        self.name = name
+        self.age = age
+        self.house = house
+        self.teacher = "Mrs __"
+
+    def displaydetails(self):
+        print(self.name)
+        print(self.age)
+        print(self.studentID)
+        print(self.house)
+        print(self.teacher)
+
+
+student1 = Student("B41991291","Thomas de Schulthess", 17, "Kolbe")
+#student1.displaydetails()
+
+class Person:
+    def __init__(self,name,IDnumber):
+        self.name = name
+        self.IDnumber = IDnumber
+    
+    def displaydetails(self):
+        print(self.name)
+        print(self.IDnumber)
+
+class Employee(Person):
+    def __init__(self,name,IDnumber,salary,position):
+        Person.__init__(self,name,IDnumber)
+        self.salary = salary
+        self.position = position
+
+    def display(self):
+        print(self.name)
+        print(self.IDnumber)
+        print(self.salary)
+        print(self.position)
+
+person1 = Employee("Bil","64931",100000,"CEO")
+#person1.displaydetails()
+#person1.display()
+
+
+class Bird:
+    def intro(self):
+        print("There are many kinds of birds.")
+    def flight(self):
+        print("Most birds can fly but some cannot.")
+
+class crow(Bird):
+    def flight(self):
+        print("Crows can fly")
+class emu(Bird):
+    def flight(self):
+        print("Emus cannot fly")
+
+b1 = Bird()
+b2 = crow()
+b3 = emu()
+
+b1.flight()
+b2.flight()
+b3.flight()
