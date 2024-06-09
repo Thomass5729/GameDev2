@@ -23,11 +23,11 @@ class myline():
         self.line = pygame.draw.line(self.surface,self.color,self.startpos,self.endpos,self.width)
     def grow(self):
         global width
-        self.width = self.width + 10
+        width = width + 10
         #pygame.draw.line(self.surface,self.color,self.startpos,self.endpos,self.width)
     def shrink(self):
         global width
-        self.width = self.width - 10
+        width = width - 10
         #pygame.draw.line(self.surface,self.color,self.startpos,self.endpos,self.width)
     def next_color(self):
         global startingcolor
