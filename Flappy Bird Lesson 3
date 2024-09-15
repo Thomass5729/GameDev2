@@ -1,0 +1,143 @@
+#flappy bird
+
+import pygame
+from pygame.locals import *
+import random
+
+WIDTH = 864
+HEIGHT = 768+168
+
+x_ground = 0
+scroll_speed = 4
+clock = pygame.time.Clock()
+fps = 60
+flying = False
+gameover = False
+pipe_gap = 250
+pipe_freq = 2000
+lastpipe = pygame.time.get_ticks()-pipe_freq
+passpipe = False
+score = 0
+
+
+font = pygame.font.SysFont("arial",60)
+def text(contents,color,x,y):
+    t = font.render(contents,True,color)
+    sc.blit(t,(x,y))
+
+
+pygame.init()
+sc = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption("Flappy Bird")
+
+background = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\background.png")
+ground = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\ground.png")
+
+pipegroup = pygame.sprite.Group()      
+
+class Bird(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.bimages = []
+        self.index = 0
+        self.animat_speed = 0
+        for i in range(1,5):
+            tempimage = pygame.image.load(f"C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\bird{i}.png")
+            self.bimages.append(tempimage)
+            print(tempimage)
+        self.image = self.bimages[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.center= (x,y)
+        self.vel = 0
+        self.clicked = False
+    def update(self):
+        global timenow,lastpipe,pipe_freq
+        if gameover == False:
+            self.animat_speed += 1
+            if self.animat_speed > 5:
+                self.animat_speed = 0
+                self.index += 1
+                if self.index >= len(self.bimages):
+                    self.index = 0
+            self.image = self.bimages[self.index]
+        if flying == True:
+            self.vel += 1
+            if self.rect.bottom < HEIGHT-168:
+                self.rect.y += self.vel
+            if self.vel > 8:
+                self.vel = 8
+            elif self.vel < -15:
+                self.vel = -15
+        if gameover == False:
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                self.vel -= 15
+            if pygame.mouse.get_pressed()[0] == 0:
+                self.clicked = False
+            
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self,x,y,position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\pipe.png")
+        self.rect = self.image.get_rect()
+        if position == 1:
+            self.image = pygame.transform.flip(self.image,0,1)
+            self.rect.bottomleft = [x,y-pipe_gap/2]
+        if position == -1:
+            self.rect.topleft = [x,y+pipe_gap/2]
+    def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.left <= 0:
+            self.kill()
+
+bgroup = pygame.sprite.Group()
+red = Bird(WIDTH//3,HEIGHT//2)
+bgroup.add(red)
+
+
+while True:
+    clock.tick(fps)
+    sc.blit(background,(0,0))
+    sc.blit(ground,(x_ground,768))
+    bgroup.draw(sc)
+    bgroup.update()
+    pipegroup.draw(sc)
+
+    text("Score: "+str(score),"black",WIDTH/2,200)
+    if len(pipegroup) > 0:
+        if bgroup.sprites()[0].rect.left > pipegroup.sprites()[0].rect.left\
+            and bgroup.sprites()[0].rect.right < pipegroup.sprites()[0].rect.right\
+            and passpipe == False:
+            passpipe = True
+        if passpipe == True:
+            if bgroup.sprites()[0].rect.left > pipegroup.sprites()[0].rect.right:
+                score +=1
+                passpipe = False
+
+    if gameover == False:
+        timenow = pygame.time.get_ticks()
+        if timenow - lastpipe > pipe_freq:
+            xpipe = random.randint(-100,100)
+            bottom_pipe = Pipe(WIDTH-78,HEIGHT/2+xpipe-168,-1)
+            top_pipe = Pipe(WIDTH-78,HEIGHT/2+xpipe-168,1)
+            pipegroup.add(bottom_pipe)
+            pipegroup.add(top_pipe)
+            lastpipe = timenow
+        pipegroup.update()
+        x_ground -= scroll_speed
+        if abs(x_ground) > 35:
+            x_ground = 0
+        
+    if red.rect.bottom >= HEIGHT-168:
+        gameover = True
+        flying = False
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.MOUSEBUTTONDOWN and flying == False:
+            flying = True
+
+    
+            
+    pygame.display.update()
