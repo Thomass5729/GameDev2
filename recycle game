@@ -1,0 +1,73 @@
+#recycle game
+
+import pygame
+from pygame.locals import *
+import random
+
+WIDTH = 1210
+HEIGHT = 908
+
+pygame.init()
+sc = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption("Flappy Bird")
+
+clock = pygame.time.clock()
+fps = 60
+gameover = False
+
+background = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\recycle.png")
+
+class Bin(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\bin.png")
+        self.image = pygame.transform.scale(self.image,(50,50))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+
+recyclable_items = [pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\pencil.png"),pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\bag.png"),pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\box.png")]
+
+class Recyclables(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = random.choice(recyclable_items)
+        self.image = pygame.transform.scale(self.image,(40,40))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+
+class Non_recyclables(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\plastic.png")
+        self.image = pygame.transform.scale(self.image,(40,40))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)\
+
+g_all = pygame.sprite.Group()
+bin = Bin(100,100)
+g_all.add(bin)
+g_recyclable = pygame.sprite.Group()
+for i in range(0,50):
+    item = Recyclables(random.randint(0,WIDTH),random.randint(0,HEIGHT))
+    g_recyclable.add(item)
+    g_all.add(item)
+g_non_recyclable = pygame.sprite.Group()
+for i in range(0,30):
+    item = Non_recyclables(random.randint(0,WIDTH),random.randint(0,HEIGHT))
+    g_non_recyclable.add(item)
+    g_all.add(item)
+
+while True:
+    clock.tick(fps)
+    sc.blit(background,(0,0))
+    g_all.draw(sc)
+    
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.QUIT:
+            exit()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP] and bin.rect.top > 0:
+            bin.rect.y -= 3
+        if keys[pygame.K_DOWN] and bin.rect.bottom < HEIGHT:
+            bin.rect.y += 3
