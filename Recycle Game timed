@@ -1,0 +1,118 @@
+#recycle game
+
+import pygame
+from pygame.locals import *
+import random
+import time
+
+WIDTH = 1210
+HEIGHT = 908
+
+pygame.init()
+sc = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption("Recycle Game")
+
+clock = pygame.time.Clock()
+starttime = time.time()
+fps = 60
+gameover = False
+score = 0
+time_limit = 60
+pass1 = True
+wincondition = 35
+
+font = pygame.font.SysFont("Arial",60)
+def text(contents,color,x,y):
+    t = font.render(contents,True,color)
+    sc.blit(t,(x,y))
+
+background = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\recycle.png")
+
+class Bin(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\bin.png")
+        self.image = pygame.transform.scale(self.image,(70,60))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+    def update(self,pressed_keys):
+        if gameover == False:
+            if (pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]) and self.rect.top > 0:
+                self.rect.move_ip(0,-7)
+            if (pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]) and self.rect.bottom < HEIGHT:
+                self.rect.move_ip(0,7)
+            if (pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]) and self.rect.right < WIDTH:
+                self.rect.move_ip(7,0)
+            if (pressed_keys[pygame.K_LEFT] or pressed_keys[pygame.K_a]) and self.rect.left > 0:
+                self.rect.move_ip(-7,0)
+
+recyclable_items = [pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\pencil.png"),pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\bag.png"),pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\box.png")]
+
+class Recyclables(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = random.choice(recyclable_items)
+        self.image = pygame.transform.scale(self.image,(50,50))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+
+class Non_recyclables(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("C:\\Users\\Thomas\\Documents\\Coding\\GameDev2\\images\\plastic.png")
+        self.image = pygame.transform.scale(self.image,(50,50))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+
+bin = Bin(100,100)
+g_bin = pygame.sprite.Group()
+g_bin.add(bin)
+g_all = pygame.sprite.Group()
+g_all.add(bin)
+g_recyclable = pygame.sprite.Group()
+for i in range(0,50):
+    item = Recyclables(random.randint(25,WIDTH-25),random.randint(25,HEIGHT-25))
+    g_recyclable.add(item)
+    g_all.add(item)
+g_non_recyclable = pygame.sprite.Group()
+for i in range(0,30):
+    item = Non_recyclables(random.randint(25,WIDTH-25),random.randint(25,HEIGHT-25))
+    g_non_recyclable.add(item)
+    g_all.add(item)
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+    
+    clock.tick(fps)
+
+    sc.blit(background,(0,0))
+    g_all.draw(sc)
+
+    pressed_keys = pygame.key.get_pressed()
+    bin.update(pressed_keys)
+
+    time_remaining = time_limit-round(time.time() - starttime,1)
+    text(str(score),"black",WIDTH/2-60,30)
+    text(str(time_remaining),"black",WIDTH/2+30,30)
+
+    if time_remaining == 0 or (not g_recyclable):
+        gameover = True
+    
+    if gameover == True:
+        sc.fill("black")
+        if score >= wincondition:
+            text("You Win! Well done","white",WIDTH/2 -200,HEIGHT/3)
+        elif score < wincondition:
+            text("Nice try - Better luck next time","white",WIDTH/2 -300,HEIGHT/3)
+    
+    if pygame.sprite.groupcollide(g_bin,g_recyclable,False,True):
+        score += 1
+    if pygame.sprite.groupcollide(g_bin,g_non_recyclable,False,True):
+        score -= 5
+
+    if pass1:
+        score = 0
+        pass1 = False
+    pygame.display.update()
