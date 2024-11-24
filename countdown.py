@@ -4,11 +4,6 @@ from tkinter import *
 import time
 import tkinter.messagebox
 
-
-
-
-
-
 win = Tk()
 win.title("My digital countdown")
 
@@ -21,13 +16,15 @@ hrs_var.set("00")
 min_var.set("00")
 sec_var.set("00")
 
-
-
 hrs_E = Entry(frame,textvariable=hrs_var)
 min_E = Entry(frame,textvariable=min_var)
 sec_E = Entry(frame,textvariable=sec_var)
 
 def click():
+    start_clock.pack_forget()#
+    hrs_E.config(state=DISABLED)#
+    min_E.config(state=DISABLED)#added this for hwk
+    sec_E.config(state=DISABLED)#
     hrs = int(hrs_E.get())
     min = int(min_E.get())
     sec = int(sec_E.get())
@@ -47,6 +44,7 @@ def click():
         time.sleep(1)
     
     tkinter.messagebox.showinfo(message="Timer has completed")
+    
 
 start_clock = Button(win,text="Start timer",command=click)
 
@@ -56,8 +54,5 @@ sec_E.grid(row=0,column=2,padx=10)
 
 frame.pack(pady=50)
 start_clock.pack()
-
-
-
 
 win.mainloop()
