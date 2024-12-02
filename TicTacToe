@@ -1,0 +1,59 @@
+from tkinter import *
+from tkinter import messagebox
+
+
+
+class MAIN():
+    def __init__(self,win):
+        self.win = win
+        self.win.title("TicTacToe")
+        self.player = "X"
+        self.buttons = [[None for i in range(3)] for j in range(3)]
+        self.makebuttons()
+    def makebuttons(self):
+        for i in range(3):
+            for j in range(3):
+                button = Button(self.win,text="",font=("normal",30),command=lambda i=i,j=j:self.click(i,j))
+                button.grid(row=i,column=j)
+                self.buttons[i][j] = button
+    def draw(self):
+        for i in range(3):
+            for j in range(3):
+                if self.buttons[i][j]["text"] != "":
+                    return True
+    def click(self,i,j):
+        if self.buttons[i][j]["text"] == "" and not self.checkwinner():
+            self.buttons[i][j]["text"] == self.player
+            if self.checkwinner():
+                messagebox.showinfo(text=f"{self.player} wins")
+                self.clear()
+            elif self.draw():
+                messagebox.showinfo(text=f"Draw")
+                self.clear()
+            else:
+                if self.player == "X":
+                    self.player == "O"
+                if self.player == "O":
+                    self.player == "X"
+    def clear(self):
+        for i in range(3):
+            for j in range(3):
+                self.buttons[i][j]["text"] = ""
+        self.player = "x"
+    def checkwinner(self):
+        for i in range(3):
+            if self.buttons[i][0]["text"] == self.buttons[i][1]["text"] == self.buttons[i][2]["text"] !="":
+                return True
+        for j in range(3):
+            if self.buttons[0][j]["text"] == self.buttons[1][j]["text"] == self.buttons[2][j]["text"] !="":
+                return True
+        if self.buttons[0][0]["text"] == self.buttons[1][1]["text"] == self.buttons[2][2]["text"] !="":
+            return True
+        if self.buttons[0][2]["text"] == self.buttons[1][1]["text"] == self.buttons[2][0]["text"] !="":
+            return True
+        return False
+    
+
+win = Tk()
+runtime = MAIN(win)
+win.mainloop()
